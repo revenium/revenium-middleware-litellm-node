@@ -1,0 +1,86 @@
+{
+  "name": "@revenium/litellm",
+  "version": "0.0.1",
+  "description": "Comprehensive middleware for Node.js applications using LiteLLM Proxy to automatically track LLM usage, costs, and performance metrics with Revenium",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build",
+    "test": "jest",
+    "test:unit": "jest --testPathPatterns=tests/unit",
+    "test:integration": "jest --testPathPatterns=tests/integration --passWithNoTests",
+    "test:performance": "jest --testPathPatterns=tests/performance --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "npm run build && tsx tests/integration/09-trace-fields-integration.ts",
+    "test:basic": "REVENIUM_DEBUG=true npx tsx tests/integration/01-basic-connectivity.ts",
+    "test:proxy": "REVENIUM_DEBUG=true npx tsx tests/integration/02-proxy-requests.ts",
+    "test:metadata": "REVENIUM_DEBUG=true npx tsx tests/integration/03-metadata-tracking.ts",
+    "test:providers": "REVENIUM_DEBUG=true npx tsx tests/integration/04-multi-provider.ts",
+    "test:streaming": "REVENIUM_DEBUG=true npx tsx tests/integration/05-streaming.ts",
+    "test:embeddings": "REVENIUM_DEBUG=true npx tsx tests/integration/06-embeddings.ts",
+    "test:model-source": "REVENIUM_DEBUG=true npx tsx tests/integration/07-model-source-test.ts",
+    "test:all-integration": "npm run test:basic && npm run test:proxy && npm run test:metadata && npm run test:providers && npm run test:streaming && npm run test:embeddings && npm run test:model-source"
+  },
+  "keywords": [
+    "revenium",
+    "litellm",
+    "llm",
+    "ai",
+    "middleware",
+    "tracking",
+    "analytics",
+    "openai",
+    "anthropic",
+    "streaming",
+    "usage",
+    "metrics",
+    "monitoring"
+  ],
+  "author": "Revenium Inc.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/revenium/revenium-middleware-litellm-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/revenium/revenium-middleware-litellm-node/issues"
+  },
+  "homepage": "https://github.com/revenium/revenium-middleware-litellm-node#readme",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "dist/**/*.map",
+    "examples/**/*",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.0.0",
+    "@types/node-fetch": "^2.6.4",
+    "dotenv": "^16.0.0",
+    "jest": "^30.2.0",
+    "node-fetch": "^2.6.7",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "node-fetch": "^2.6.0 || ^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "node-fetch": {
+      "optional": true
+    }
+  }
+}
