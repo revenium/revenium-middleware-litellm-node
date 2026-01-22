@@ -104,8 +104,6 @@ pip install litellm[proxy]
 litellm --config /path/to/config.yaml
 ```
 
-Note that your proxy server will need to install the [Revenium python middleware](https://pypi.org/project/revenium-middleware-litellm) as well in order to pass metadata received by LiteLLM to the Revenium API.
-
 ## What Gets Tracked
 
 The middleware automatically captures comprehensive usage data for both chat completions and embeddings:
@@ -149,7 +147,7 @@ The middleware provides the following functions for advanced usage:
 - **`initialize()`** - Manually initialize the middleware (auto-initializes on import)
 - **`configure(config)`** - Set configuration programmatically instead of using environment variables
 - **`isMiddlewareInitialized()`** - Check if the middleware is initialized and working
-- **`getStatus()`** - Get detailed status information (initialized, patched, config, proxy URL)
+- **`getStatus()`** - Get detailed status information with fields: `initialized`, `patched`, `hasConfig`, `proxyUrl`
 - **`resetInitializationState()`** - Reset initialization state (useful for testing)
 
 **Example:**
@@ -307,7 +305,7 @@ These fields can be provided via HTTP headers or environment variables. The midd
 
 ### Metadata Fields Reference
 
-The following table shows all metadata fields with their use cases:
+The following table shows the most commonly used metadata fields with their use cases:
 
 | Field                      | Header                                  | Use Case                                                              |
 | -------------------------- | --------------------------------------- | --------------------------------------------------------------------- |
@@ -316,10 +314,13 @@ The following table shows all metadata fields with their use cases:
 | `subscriberCredentialName` | `x-revenium-subscriber-credential-name` | Identify which API key or credential was used                         |
 | `subscriberCredential`     | `x-revenium-subscriber-credential`      | Store credential value for audit trails                               |
 | `organizationId`           | `x-revenium-organization-id`            | Multi-tenant tracking and cost allocation                             |
+| `subscriptionId`           | `x-revenium-subscription-id`            | Track usage by subscription plan or tier                              |
 | `productId`                | `x-revenium-product-id`                 | Track usage across different products or features                     |
+| `taskId`                   | `x-revenium-task-id`                    | Unique identifier for a specific task or job                          |
 | `taskType`                 | `x-revenium-task-type`                  | Categorize requests by task (e.g., "summarization", "translation")    |
 | `traceId`                  | `x-revenium-trace-id`                   | Link multiple API calls in a conversation or session                  |
 | `agent`                    | `x-revenium-agent`                      | Identify which AI agent or service made the request                   |
+| `responseQualityScore`     | `x-revenium-response-quality-score`     | Track quality metrics for responses (0-10 scale)                      |
 | `environment`              | `x-revenium-environment`                | Separate production, staging, and development usage                   |
 | `operationSubtype`         | `x-revenium-operation-subtype`          | Add detail to operation type (e.g., "function_call")                  |
 | `retryNumber`              | `x-revenium-retry-number`               | Track retry attempts for reliability analysis                         |
@@ -329,6 +330,8 @@ The following table shows all metadata fields with their use cases:
 | `credentialAlias`          | `x-revenium-credential-alias`           | Friendly name for credentials in reports                              |
 | `traceType`                | `x-revenium-trace-type`                 | Group workflows by type (e.g., "customer-support", "data-processing") |
 | `traceName`                | `x-revenium-trace-name`                 | Human-readable trace instance labels                                  |
+| `capturePrompts`           | `x-revenium-capture-prompts`            | Enable/disable prompt capture for this request (true/false)           |
+| `maxPromptSize`            | `x-revenium-max-prompt-size`            | Maximum prompt size in characters before truncation                   |
 
 ### Running Examples
 
@@ -480,9 +483,10 @@ const response = await fetch(`${LITELLM_PROXY_URL}/chat/completions`, {
 
 The middleware automatically sanitizes credentials from captured prompts:
 
-- API keys and tokens are redacted
+- API keys and tokens are redacted (e.g., `sk-***REDACTED***`)
 - Sensitive headers are filtered
-- Credential values are replaced with `[REDACTED]`
+- Bearer tokens are replaced with `Bearer ***REDACTED***`
+- Passwords and secrets are sanitized
 
 ### Use Cases
 
@@ -555,12 +559,6 @@ This will show:
 - `[Revenium] LiteLLM request intercepted`
 - `[Revenium] Usage metadata extracted`
 - `[Revenium] Revenium tracking successful`
-
-## Requirements
-
-- Node.js 18+
-- LiteLLM Proxy server (local or hosted) with Revenium's [python middleware](https://pypi.org/project/revenium-middleware-litellm) installed
-- TypeScript 5.0+ (for TypeScript projects)
 
 ## Documentation
 
