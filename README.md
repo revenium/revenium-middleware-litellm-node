@@ -462,6 +462,8 @@ configure({
 **Per-Request via Headers:**
 
 ```typescript
+const LITELLM_PROXY_URL = process.env.LITELLM_PROXY_URL;
+
 const headers = {
   "x-revenium-capture-prompts": "true",
 };
