@@ -84,11 +84,97 @@ REVENIUM_PRINT_SUMMARY=true  # or 'human' or 'json'
 REVENIUM_TEAM_ID=your_team_id  # Required for cost retrieval
 ```
 
+## Requirements
+
+- Node.js >= 18.0.0
+- LiteLLM Proxy server running and accessible
+- Revenium API key (obtain from [app.revenium.ai](https://app.revenium.ai))
+
 ## LiteLLM Proxy Server Installation
+
+This middleware requires a running LiteLLM Proxy server. For installation instructions, see the [official LiteLLM documentation](https://docs.litellm.ai/docs/proxy/quick_start).
+
+**Quick setup:**
+
+```bash
+# Install LiteLLM
+pip install litellm[proxy]
+
+# Start the proxy server
+litellm --config /path/to/config.yaml
+```
+
+Note that your proxy server will need to install the [Revenium python middleware](https://pypi.org/project/revenium-middleware-litellm) as well in order to pass metadata received by LiteLLM to the Revenium API.
+
+## What Gets Tracked
+
+The middleware automatically captures comprehensive usage data for both chat completions and embeddings:
+
+### Usage Metrics
+
+- **Token Counts** - Input tokens, output tokens, total tokens
+- **Model Information** - Model name, provider (OpenAI, Anthropic, Google, etc.)
+- **Request Timing** - Request duration, time-to-first-token (for streaming)
+- **Cost Calculation** - Estimated costs based on current pricing
+- **Operation Type** - Chat completions or embeddings
+
+### Business Context (Optional)
+
+- **User Tracking** - Subscriber ID, email, credentials
+- **Organization Data** - Organization ID, product ID
+- **Task Classification** - Task type, agent identifier, trace ID
+- **Quality Metrics** - Response quality scores, task identifiers
+
+### Technical Details
+
+- **API Endpoints** - Chat completions and embeddings
+- **Request Types** - Streaming vs non-streaming (chat only)
+- **Error Tracking** - Failed requests, error types, retry attempts
+- **Environment Info** - Development vs production usage
 
 ## Usage
 
-Note that your proxy server will need to install the [Revenium python middleware](https://pypi.org/project/revenium-middleware-litellm) as well in order to pass metadata received by LiteLLM to the Revenium API.
+The middleware automatically initializes when imported. Simply import it at the top of your application:
+
+```typescript
+import "@revenium/litellm";
+```
+
+That's it! All LiteLLM Proxy requests will now be automatically tracked.
+
+## API Overview
+
+The middleware provides the following functions for advanced usage:
+
+- **`initialize()`** - Manually initialize the middleware (auto-initializes on import)
+- **`configure(config)`** - Set configuration programmatically instead of using environment variables
+- **`isMiddlewareInitialized()`** - Check if the middleware is initialized and working
+- **`getStatus()`** - Get detailed status information (initialized, patched, config, proxy URL)
+- **`resetInitializationState()`** - Reset initialization state (useful for testing)
+
+**Example:**
+
+```typescript
+import {
+  configure,
+  isMiddlewareInitialized,
+  getStatus,
+} from "@revenium/litellm";
+
+// Configure programmatically
+configure({
+  reveniumMeteringApiKey: "hak_your_api_key",
+  reveniumMeteringBaseUrl: "https://api.revenium.ai",
+  litellmProxyUrl: "https://your-proxy.com",
+  litellmApiKey: "your_litellm_key",
+});
+
+// Check status
+if (isMiddlewareInitialized()) {
+  console.log("Middleware is ready!");
+  console.log(getStatus());
+}
+```
 
 ## Quick Start Examples
 
@@ -137,6 +223,29 @@ shown in the examples folder.
 ## LiteLLM Multi-Provider Features
 
 **Universal LLM Support**: The middleware supports all LiteLLM providers with automatic usage tracking for both chat completions and embeddings.
+
+## API Support Matrix
+
+The middleware has been tested and supports the following features:
+
+| Feature                      | Chat Completions | Embeddings | Streaming |
+| ---------------------------- | ---------------- | ---------- | --------- |
+| Basic Requests               | ✅               | ✅         | ✅        |
+| Metadata Tracking            | ✅               | ✅         | ✅        |
+| Token Usage                  | ✅               | ✅         | N/A       |
+| Cost Calculation             | ✅               | ✅         | ✅        |
+| Time-to-First-Token          | ✅               | N/A        | ✅        |
+| Error Tracking               | ✅               | ✅         | ✅        |
+| Multi-Provider (via LiteLLM) | ✅               | ✅         | ✅        |
+
+**Supported Providers** (via LiteLLM Proxy):
+
+- OpenAI
+- Anthropic (Claude)
+- Google (Gemini)
+- Azure OpenAI
+- Cohere
+- And all other providers supported by LiteLLM
 
 ## Configuration
 
@@ -195,6 +304,31 @@ The middleware supports 10 trace visualization fields for distributed tracing an
 | `traceId`             | `x-revenium-trace-id`              | -                                                             | Unique identifier for a conversation or session                                                   |
 
 These fields can be provided via HTTP headers or environment variables. The middleware automatically detects and validates them.
+
+### Metadata Fields Reference
+
+The following table shows all metadata fields with their use cases:
+
+| Field                      | Header                                  | Use Case                                                              |
+| -------------------------- | --------------------------------------- | --------------------------------------------------------------------- |
+| `subscriberId`             | `x-revenium-subscriber-id`              | Track usage by end user for billing and analytics                     |
+| `subscriberEmail`          | `x-revenium-subscriber-email`           | Associate requests with user email for support and reporting          |
+| `subscriberCredentialName` | `x-revenium-subscriber-credential-name` | Identify which API key or credential was used                         |
+| `subscriberCredential`     | `x-revenium-subscriber-credential`      | Store credential value for audit trails                               |
+| `organizationId`           | `x-revenium-organization-id`            | Multi-tenant tracking and cost allocation                             |
+| `productId`                | `x-revenium-product-id`                 | Track usage across different products or features                     |
+| `taskType`                 | `x-revenium-task-type`                  | Categorize requests by task (e.g., "summarization", "translation")    |
+| `traceId`                  | `x-revenium-trace-id`                   | Link multiple API calls in a conversation or session                  |
+| `agent`                    | `x-revenium-agent`                      | Identify which AI agent or service made the request                   |
+| `environment`              | `x-revenium-environment`                | Separate production, staging, and development usage                   |
+| `operationSubtype`         | `x-revenium-operation-subtype`          | Add detail to operation type (e.g., "function_call")                  |
+| `retryNumber`              | `x-revenium-retry-number`               | Track retry attempts for reliability analysis                         |
+| `parentTransactionId`      | `x-revenium-parent-transaction-id`      | Build distributed traces across microservices                         |
+| `transactionName`          | `x-revenium-transaction-name`           | Human-readable operation labels for dashboards                        |
+| `region`                   | `x-revenium-region`                     | Track usage by geographic region or data center                       |
+| `credentialAlias`          | `x-revenium-credential-alias`           | Friendly name for credentials in reports                              |
+| `traceType`                | `x-revenium-trace-type`                 | Group workflows by type (e.g., "customer-support", "data-processing") |
+| `traceName`                | `x-revenium-trace-name`                 | Human-readable trace instance labels                                  |
 
 ### Running Examples
 
@@ -292,6 +426,70 @@ ConfigurationManager.setConfig({
 - **With `teamId`**: Fetches actual cost from Revenium API with automatic retry logic
 - **Cost pending**: Shows "(pending aggregation)" if cost data isn't available yet
 - **Fire-and-forget**: Never blocks your application, even if cost fetch fails
+
+## Prompt Capture
+
+The middleware can capture prompts and responses for analysis and debugging. This feature is **disabled by default** for privacy and performance.
+
+### Configuration
+
+Enable prompt capture using environment variables, programmatic configuration, or per-request metadata:
+
+**Environment Variable:**
+
+```bash
+export REVENIUM_CAPTURE_PROMPTS=true
+export REVENIUM_MAX_PROMPT_SIZE=50000  # Optional: default is 50000 characters
+```
+
+**Programmatic Configuration:**
+
+```typescript
+import { configure } from "@revenium/litellm";
+
+configure({
+  reveniumMeteringApiKey: "hak_your_api_key",
+  reveniumMeteringBaseUrl: "https://api.revenium.ai",
+  litellmProxyUrl: "https://your-proxy.com",
+  capturePrompts: true,
+  maxPromptSize: 50000,
+});
+```
+
+**Per-Request via Headers:**
+
+```typescript
+const headers = {
+  "x-revenium-capture-prompts": "true",
+};
+
+const response = await fetch(`${LITELLM_PROXY_URL}/chat/completions`, {
+  method: "POST",
+  headers: {
+    ...headers,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: "gpt-4",
+    messages: [{ role: "user", content: "Hello!" }],
+  }),
+});
+```
+
+### Security
+
+The middleware automatically sanitizes credentials from captured prompts:
+
+- API keys and tokens are redacted
+- Sensitive headers are filtered
+- Credential values are replaced with `[REDACTED]`
+
+### Use Cases
+
+- **Debugging**: Analyze failed requests by reviewing exact prompts and responses
+- **Quality Assurance**: Review model outputs for accuracy and appropriateness
+- **Compliance**: Maintain audit trails of AI interactions
+- **Cost Analysis**: Understand which prompts generate the most tokens
 
 ## How It Works
 
