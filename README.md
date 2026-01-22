@@ -230,10 +230,11 @@ The middleware has been tested and supports the following features:
 | ---------------------------- | ---------------- | ---------- | --------- |
 | Basic Requests               | ✅               | ✅         | ✅        |
 | Metadata Tracking            | ✅               | ✅         | ✅        |
-| Token Usage                  | ✅               | ✅         | N/A       |
+| Token Usage                  | ✅               | ✅         | ✅        |
 | Cost Calculation             | ✅               | ✅         | ✅        |
 | Time-to-First-Token          | ✅               | N/A        | ✅        |
 | Error Tracking               | ✅               | ✅         | ✅        |
+| Prompt Capture               | ✅               | ❌         | ✅        |
 | Multi-Provider (via LiteLLM) | ✅               | ✅         | ✅        |
 
 **Supported Providers** (via LiteLLM Proxy):
@@ -305,7 +306,7 @@ These fields can be provided via HTTP headers or environment variables. The midd
 
 ### Metadata Fields Reference
 
-The following table shows the most commonly used metadata fields with their use cases:
+The following table shows commonly used metadata fields that can be set via HTTP headers or environment variables:
 
 | Field                      | Header                                  | Use Case                                                              |
 | -------------------------- | --------------------------------------- | --------------------------------------------------------------------- |
@@ -316,11 +317,9 @@ The following table shows the most commonly used metadata fields with their use 
 | `organizationId`           | `x-revenium-organization-id`            | Multi-tenant tracking and cost allocation                             |
 | `subscriptionId`           | `x-revenium-subscription-id`            | Track usage by subscription plan or tier                              |
 | `productId`                | `x-revenium-product-id`                 | Track usage across different products or features                     |
-| `taskId`                   | `x-revenium-task-id`                    | Unique identifier for a specific task or job                          |
 | `taskType`                 | `x-revenium-task-type`                  | Categorize requests by task (e.g., "summarization", "translation")    |
 | `traceId`                  | `x-revenium-trace-id`                   | Link multiple API calls in a conversation or session                  |
 | `agent`                    | `x-revenium-agent`                      | Identify which AI agent or service made the request                   |
-| `responseQualityScore`     | `x-revenium-response-quality-score`     | Track quality metrics for responses (0-10 scale)                      |
 | `environment`              | `x-revenium-environment`                | Separate production, staging, and development usage                   |
 | `operationSubtype`         | `x-revenium-operation-subtype`          | Add detail to operation type (e.g., "function_call")                  |
 | `retryNumber`              | `x-revenium-retry-number`               | Track retry attempts for reliability analysis                         |
@@ -331,7 +330,6 @@ The following table shows the most commonly used metadata fields with their use 
 | `traceType`                | `x-revenium-trace-type`                 | Group workflows by type (e.g., "customer-support", "data-processing") |
 | `traceName`                | `x-revenium-trace-name`                 | Human-readable trace instance labels                                  |
 | `capturePrompts`           | `x-revenium-capture-prompts`            | Enable/disable prompt capture for this request (true/false)           |
-| `maxPromptSize`            | `x-revenium-max-prompt-size`            | Maximum prompt size in characters before truncation                   |
 
 ### Running Examples
 
@@ -486,9 +484,9 @@ const response = await fetch(`${LITELLM_PROXY_URL}/chat/completions`, {
 The middleware automatically sanitizes credentials from captured prompts:
 
 - API keys and tokens are redacted (e.g., `sk-***REDACTED***`)
-- Sensitive headers are filtered
 - Bearer tokens are replaced with `Bearer ***REDACTED***`
 - Passwords and secrets are sanitized
+- Credential patterns in prompt content are automatically detected and redacted
 
 ### Use Cases
 
