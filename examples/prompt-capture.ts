@@ -18,8 +18,8 @@ async function main() {
 
   try {
     const metadata: UsageMetadata = {
-      organizationId: "org-prompt-capture-demo",
-      productId: "prod-litellm-prompt-capture",
+      organizationName: "org-prompt-capture-demo",
+      productName: "prod-litellm-prompt-capture",
     };
 
     const response = await fetch(
@@ -31,8 +31,8 @@ async function main() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.LITELLM_API_KEY || ""}`,
-          "X-Revenium-Organization-Id": metadata.organizationId || "",
-          "X-Revenium-Product-Id": metadata.productId || "",
+          "X-Revenium-Organization-Name": metadata.organizationName || "",
+          "X-Revenium-Product-Name": metadata.productName || "",
         },
         body: JSON.stringify({
           model: "gpt-4o-mini",
@@ -49,7 +49,7 @@ async function main() {
           ],
           max_tokens: 100,
         }),
-      }
+      },
     );
 
     const data = await response.json();
@@ -58,7 +58,7 @@ async function main() {
   } catch (error) {
     console.error(
       "Error:",
-      error instanceof Error ? error.message : String(error)
+      error instanceof Error ? error.message : String(error),
     );
   }
 
@@ -68,8 +68,8 @@ async function main() {
 
   try {
     const metadata2: UsageMetadata = {
-      organizationId: "org-prompt-capture-demo",
-      productId: "prod-litellm-prompt-capture",
+      organizationName: "org-prompt-capture-demo",
+      productName: "prod-litellm-prompt-capture",
       capturePrompts: false,
     };
 
@@ -82,8 +82,8 @@ async function main() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.LITELLM_API_KEY || ""}`,
-          "X-Revenium-Organization-Id": metadata2.organizationId || "",
-          "X-Revenium-Product-Id": metadata2.productId || "",
+          "X-Revenium-Organization-Name": metadata2.organizationName || "",
+          "X-Revenium-Product-Name": metadata2.productName || "",
           "X-Revenium-Capture-Prompts": "false",
         },
         body: JSON.stringify({
@@ -100,7 +100,7 @@ async function main() {
           ],
           max_tokens: 100,
         }),
-      }
+      },
     );
 
     const data2 = await response2.json();
@@ -109,7 +109,7 @@ async function main() {
   } catch (error) {
     console.error(
       "Error:",
-      error instanceof Error ? error.message : String(error)
+      error instanceof Error ? error.message : String(error),
     );
   }
 

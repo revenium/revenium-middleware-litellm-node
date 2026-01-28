@@ -10,7 +10,7 @@ const result = dotenv.config({ path: envPath });
 if (result.error) {
   console.log("❌ Failed to load .env file:", result.error.message);
   console.log(
-    "Make sure you have a .env file in the root directory with required variables"
+    "Make sure you have a .env file in the root directory with required variables",
   );
 } else {
   console.log("✅ Environment file loaded successfully");
@@ -43,7 +43,7 @@ async function runBasicConnectivityTest() {
     console.log("✅ Auto-initialization successful from environment variables");
   } else {
     console.log(
-      "⚠️  Auto-initialization failed - will test manual configuration"
+      "⚠️  Auto-initialization failed - will test manual configuration",
     );
   }
 
@@ -54,14 +54,14 @@ async function runBasicConnectivityTest() {
     reveniumMeteringBaseUrl: "https://api.dev.hcapp.io",
     litellmProxyUrl: "http://localhost:4000/chat/completions",
     litellmApiKey: "sk-test-key",
-    organizationId: "test_org",
+    organizationName: "test_org",
     apiTimeout: 10000,
     failSilent: false,
   });
 
   console.log(
     "Manual configuration result:",
-    testConfig ? "✅ Success" : "❌ Failed"
+    testConfig ? "✅ Success" : "❌ Failed",
   );
 
   // Test 1.3: Final status check
@@ -107,17 +107,17 @@ async function runBasicConnectivityTest() {
 
       if (url.pathname.includes("/chat/completions")) {
         console.log(
-          "✅ URL includes chat completions endpoint - will match exactly"
+          "✅ URL includes chat completions endpoint - will match exactly",
         );
       } else {
         console.log(
-          "ℹ️  URL is base URL - will match any chat completions endpoint"
+          "ℹ️  URL is base URL - will match any chat completions endpoint",
         );
       }
     } catch (error) {
       console.log(
         "❌ LiteLLM Proxy URL is invalid:",
-        error instanceof Error ? error.message : String(error)
+        error instanceof Error ? error.message : String(error),
       );
     }
   }
@@ -132,7 +132,7 @@ async function runBasicConnectivityTest() {
     console.log("\n🚀 Middleware is ready! Proceed to proxy request tests.");
   } else {
     console.log(
-      "\n⚠️  Middleware not ready. Check configuration and try again."
+      "\n⚠️  Middleware not ready. Check configuration and try again.",
     );
   }
 

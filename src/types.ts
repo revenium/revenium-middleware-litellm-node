@@ -10,7 +10,12 @@ export interface ReveniumConfig {
   litellmProxyUrl: string;
   /** LiteLLM API key for proxy authentication */
   litellmApiKey?: string;
-  /** Optional organization identifier for multi-tenant tracking */
+  /** Customer organization name for multi-tenant applications (used for lookup/auto-creation) */
+  organizationName?: string;
+  /**
+   * @deprecated Use organizationName instead. This field will be removed in a future version.
+   * Organization/customer ID for aggregating usage across multiple users
+   */
   organizationId?: string;
   /** API timeout in milliseconds (default: 5000) */
   apiTimeout?: number;
@@ -40,8 +45,20 @@ export interface UsageMetadata {
   subscriberId?: string;
   subscriberCredentialName?: string;
   subscriberCredential?: string;
+  /** Customer organization name for multi-tenant applications (used for lookup/auto-creation) */
+  organizationName?: string;
+  /**
+   * @deprecated Use organizationName instead. This field will be removed in a future version.
+   * Organization/customer ID for aggregating usage across multiple users
+   */
   organizationId?: string;
   subscriptionId?: string;
+  /** Product or feature name that is using AI services (used for lookup/auto-creation) */
+  productName?: string;
+  /**
+   * @deprecated Use productName instead. This field will be removed in a future version.
+   * Product ID for cost attribution across features/tiers
+   */
   productId?: string;
   agent?: string;
   responseQualityScore?: number;
@@ -82,8 +99,8 @@ export interface ReveniumPayload {
   cacheCreationTokenCount: number;
   cacheReadTokenCount: number;
   totalTokenCount: number;
-  organizationId?: string;
-  productId?: string;
+  organizationName?: string;
+  productName?: string;
   subscriber?: Subscriber;
   subscriptionId?: string;
   model: string;
@@ -335,7 +352,9 @@ export interface ResponseContext {
  */
 export interface ReveniumHeaders {
   "x-revenium-subscriber-id"?: string;
+  "x-revenium-product-name"?: string;
   "x-revenium-product-id"?: string;
+  "x-revenium-organization-name"?: string;
   "x-revenium-organization-id"?: string;
   "x-revenium-trace-id"?: string;
   "x-revenium-task-type"?: string;

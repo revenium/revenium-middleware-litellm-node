@@ -140,10 +140,10 @@ export async function sendReveniumMetrics(data: {
     completionStartTime: isEmbedding
       ? now
       : data.isStreamed && data.timeToFirstToken
-      ? new Date(
-          Date.now() - (data.duration - data.timeToFirstToken)
-        ).toISOString()
-      : now,
+        ? new Date(
+            Date.now() - (data.duration - data.timeToFirstToken),
+          ).toISOString()
+        : now,
     timeToFirstToken: isEmbedding
       ? 0
       : data.timeToFirstToken || Math.round(data.duration),
@@ -152,8 +152,13 @@ export async function sendReveniumMetrics(data: {
     traceId: data.usageMetadata?.traceId,
     taskType: data.usageMetadata?.taskType,
     agent: data.usageMetadata?.agent,
-    organizationId: data.usageMetadata?.organizationId || config.organizationId,
-    productId: data.usageMetadata?.productId,
+    organizationName:
+      data.usageMetadata?.organizationName ||
+      data.usageMetadata?.organizationId ||
+      config.organizationName ||
+      config.organizationId,
+    productName:
+      data.usageMetadata?.productName || data.usageMetadata?.productId,
     subscriber: subscriber,
     subscriptionId: data.usageMetadata?.subscriptionId,
     responseQualityScore: data.usageMetadata?.responseQualityScore,
@@ -225,7 +230,7 @@ export async function sendReveniumMetrics(data: {
         "Circuit breaker is open - Revenium API temporarily unavailable",
         503,
         "Service temporarily unavailable",
-        createErrorContext().withRequestId(data.requestId).build()
+        createErrorContext().withRequestId(data.requestId).build(),
       );
     }
     return;
@@ -282,7 +287,7 @@ export async function sendReveniumMetrics(data: {
             `Revenium API error: ${response.status} ${response.statusText}`,
             response.status,
             responseText,
-            errorContext
+            errorContext,
           );
         }
 
@@ -302,7 +307,7 @@ export async function sendReveniumMetrics(data: {
       model: data.model,
       duration: data.duration,
       totalTokens: data.totalTokens,
-    }
+    },
   );
 
   if (!result.success && result.error) {
@@ -321,7 +326,7 @@ export async function sendReveniumMetrics(data: {
  * This ensures tracking never blocks the main application flow
  */
 export function trackUsageAsync(
-  trackingData: Parameters<typeof sendReveniumMetrics>[0]
+  trackingData: Parameters<typeof sendReveniumMetrics>[0],
 ): void {
   // Run tracking in background without awaiting
   // The sendReveniumMetrics function now handles retries and error strategies internally
@@ -364,11 +369,16 @@ export function trackEmbeddingsUsageAsync(data: {
 }
 
 export function extractMetadataFromHeaders(
-  headers: Record<string, string>
+  headers: Record<string, string>,
 ): UsageMetadata {
   return {
     subscriberId: headers["x-revenium-subscriber-id"],
+    productName:
+      headers["x-revenium-product-name"] || headers["x-revenium-product-id"],
     productId: headers["x-revenium-product-id"],
+    organizationName:
+      headers["x-revenium-organization-name"] ||
+      headers["x-revenium-organization-id"],
     organizationId: headers["x-revenium-organization-id"],
     traceId: headers["x-revenium-trace-id"],
     taskType: headers["x-revenium-task-type"],
@@ -398,7 +408,7 @@ export function extractMetadataFromHeaders(
  * Process LiteLLM response and extract token usage
  */
 export function extractUsageFromResponse(
-  response: LiteLLMChatCompletionResponse
+  response: LiteLLMChatCompletionResponse,
 ): {
   promptTokens: number;
   completionTokens: number;
