@@ -76,8 +76,10 @@ export const stringFields: (keyof UsageMetadata)[] = [
   "subscriberCredentialName",
   "subscriberCredential",
   "organizationId",
+  "organizationName",
   "subscriptionId",
   "productId",
+  "productName",
   "agent",
 ];
 

@@ -14,7 +14,7 @@ configure({
   reveniumMeteringBaseUrl: process.env.REVENIUM_METERING_BASE_URL!,
   litellmProxyUrl: process.env.LITELLM_PROXY_URL!,
   litellmApiKey: process.env.LITELLM_API_KEY,
-  organizationId: "test_org",
+  organizationName: "test_org",
   apiTimeout: 15000,
   failSilent: false,
 });
@@ -37,17 +37,17 @@ async function testTraceFields() {
   console.log("- AWS_REGION:", process.env.AWS_REGION);
   console.log(
     "- REVENIUM_CREDENTIAL_ALIAS:",
-    process.env.REVENIUM_CREDENTIAL_ALIAS
+    process.env.REVENIUM_CREDENTIAL_ALIAS,
   );
   console.log("- REVENIUM_TRACE_TYPE:", process.env.REVENIUM_TRACE_TYPE);
   console.log("- REVENIUM_TRACE_NAME:", process.env.REVENIUM_TRACE_NAME);
   console.log(
     "- REVENIUM_PARENT_TRANSACTION_ID:",
-    process.env.REVENIUM_PARENT_TRANSACTION_ID
+    process.env.REVENIUM_PARENT_TRANSACTION_ID,
   );
   console.log(
     "- REVENIUM_TRANSACTION_NAME:",
-    process.env.REVENIUM_TRANSACTION_NAME
+    process.env.REVENIUM_TRANSACTION_NAME,
   );
   console.log("- REVENIUM_RETRY_NUMBER:", process.env.REVENIUM_RETRY_NUMBER);
 
@@ -80,7 +80,7 @@ async function testTraceFields() {
 
     if (!response1.ok) {
       throw new Error(
-        `Test 1 failed: HTTP ${response1.status} ${response1.statusText}`
+        `Test 1 failed: HTTP ${response1.status} ${response1.statusText}`,
       );
     }
 
@@ -134,7 +134,7 @@ async function testTraceFields() {
 
     if (!response2.ok) {
       throw new Error(
-        `Test 2 failed: HTTP ${response2.status} ${response2.statusText}`
+        `Test 2 failed: HTTP ${response2.status} ${response2.statusText}`,
       );
     }
 
@@ -145,7 +145,7 @@ async function testTraceFields() {
 
     console.log(
       "✓ Response type:",
-      data2.choices[0].message.tool_calls ? "tool_calls" : "text"
+      data2.choices[0].message.tool_calls ? "tool_calls" : "text",
     );
     console.log("✓ Expected operationSubtype: function_call (tools present)");
     testsPassed++;
@@ -166,7 +166,7 @@ async function testTraceFields() {
 
     if (!response3.ok) {
       throw new Error(
-        `Test 3 failed: HTTP ${response3.status} ${response3.statusText}`
+        `Test 3 failed: HTTP ${response3.status} ${response3.statusText}`,
       );
     }
 
@@ -192,10 +192,10 @@ async function testTraceFields() {
     process.exit(0);
   } catch (error) {
     console.error(
-      `\n✗ Test failed: ${error instanceof Error ? error.message : error}`
+      `\n✗ Test failed: ${error instanceof Error ? error.message : error}`,
     );
     console.log(
-      `\n✗ ${testsPassed}/${totalTests} tests passed before failure\n`
+      `\n✗ ${testsPassed}/${totalTests} tests passed before failure\n`,
     );
     process.exit(1);
   }

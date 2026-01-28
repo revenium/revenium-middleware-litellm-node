@@ -28,7 +28,7 @@ async function runMetadataTrackingTest() {
       reveniumMeteringBaseUrl: process.env.REVENIUM_METERING_BASE_URL!,
       litellmProxyUrl: process.env.LITELLM_PROXY_URL!,
       litellmApiKey: process.env.LITELLM_API_KEY,
-      organizationId: "test_org",
+      organizationName: "test_org",
       apiTimeout: 15000,
       failSilent: false,
     });
@@ -54,16 +54,15 @@ async function runMetadataTrackingTest() {
     "x-revenium-agent": "document_processor_v2",
   };
 
-  const { extractMetadataFromHeaders } = await import(
-    "@revenium/litellm/dist/tracking"
-  );
+  const { extractMetadataFromHeaders } =
+    await import("@revenium/litellm/dist/tracking");
   const extractedMetadata = extractMetadataFromHeaders(testHeaders);
   console.log("Extracted metadata:", extractedMetadata);
 
   const expectedFields = [
     "subscriberId",
-    "productId",
-    "organizationId",
+    "productName",
+    "organizationName",
     "traceId",
     "taskType",
     "agent",
@@ -74,7 +73,7 @@ async function runMetadataTrackingTest() {
       console.log(
         `✅ ${field}: ${
           extractedMetadata[field as keyof typeof extractedMetadata]
-        }`
+        }`,
       );
     } else {
       console.log(`❌ ${field}: Missing`);
@@ -83,7 +82,7 @@ async function runMetadataTrackingTest() {
 
   // Test 3.2: Provider extraction through real requests
   console.log(
-    "\n📋 Step 3.2: Testing provider detection through model strings"
+    "\n📋 Step 3.2: Testing provider detection through model strings",
   );
 
   const testModels = [
@@ -104,7 +103,7 @@ async function runMetadataTrackingTest() {
     console.log(
       `Model: ${test.model.padEnd(35)} → Expected Provider: ${
         test.expectedProvider
-      }`
+      }`,
     );
   });
 
@@ -150,7 +149,7 @@ async function runMetadataTrackingTest() {
 
   // Test 3.4: Real request with comprehensive metadata
   console.log(
-    "\n📋 Step 3.4: Testing real request with comprehensive metadata"
+    "\n📋 Step 3.4: Testing real request with comprehensive metadata",
   );
 
   const comprehensiveHeaders = {
@@ -169,7 +168,7 @@ async function runMetadataTrackingTest() {
   // Construct proper endpoint URL like the examples do
   const baseProxyUrl = config.proxyUrl!.replace(
     /\/(chat\/completions|embeddings)$/,
-    ""
+    "",
   );
   const chatCompletionsUrl = `${baseProxyUrl}/chat/completions`;
 
@@ -225,7 +224,7 @@ async function runMetadataTrackingTest() {
   } catch (error) {
     console.log(
       "Comprehensive request error:",
-      error instanceof Error ? error.message : String(error)
+      error instanceof Error ? error.message : String(error),
     );
   }
 
@@ -269,7 +268,7 @@ async function runMetadataTrackingTest() {
         console.log(`Should track as provider: ${test.expectedProvider}`);
       } else {
         console.log(
-          `${test.expectedProvider} request failed (may not be configured)`
+          `${test.expectedProvider} request failed (may not be configured)`,
         );
       }
 
@@ -278,7 +277,7 @@ async function runMetadataTrackingTest() {
     } catch (error) {
       console.log(
         `${test.expectedProvider} request error:`,
-        error instanceof Error ? error.message : String(error)
+        error instanceof Error ? error.message : String(error),
       );
     }
   }

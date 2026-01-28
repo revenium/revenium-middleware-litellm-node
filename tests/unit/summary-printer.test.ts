@@ -24,8 +24,8 @@ const mockPayload: ReveniumPayload = {
   traceId: "trace-123",
   taskType: "chat",
   agent: "litellm",
-  organizationId: "test-org",
-  productId: "test-product",
+  organizationName: "test-org",
+  productName: "test-product",
   subscriber: {
     id: "test-subscriber-id",
     email: "test@example.com",
@@ -170,14 +170,14 @@ describe("Summary Printer", () => {
       expect(mockFetch).toHaveBeenCalledTimes(1);
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining(
-          "/profitstream/v2/api/sources/metrics/ai/completions"
+          "/profitstream/v2/api/sources/metrics/ai/completions",
         ),
         expect.objectContaining({
           method: "GET",
           headers: expect.objectContaining({
             "x-api-key": "test-key",
           }),
-        })
+        }),
       );
 
       const output = consoleSpy.mock.calls.map((call) => call[0]).join("\n");

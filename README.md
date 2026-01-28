@@ -314,9 +314,9 @@ The following table shows commonly used metadata fields that can be set via HTTP
 | `subscriberEmail`          | `x-revenium-subscriber-email`           | Associate requests with user email for support and reporting          |
 | `subscriberCredentialName` | `x-revenium-subscriber-credential-name` | Identify which API key or credential was used                         |
 | `subscriberCredential`     | `x-revenium-subscriber-credential`      | Store credential value for audit trails                               |
-| `organizationId`           | `x-revenium-organization-id`            | Multi-tenant tracking and cost allocation                             |
+| `organizationName`         | `x-revenium-organization-name`          | Multi-tenant tracking and cost allocation                             |
 | `subscriptionId`           | `x-revenium-subscription-id`            | Track usage by subscription plan or tier                              |
-| `productId`                | `x-revenium-product-id`                 | Track usage across different products or features                     |
+| `productName`              | `x-revenium-product-name`               | Track usage across different products or features                     |
 | `taskType`                 | `x-revenium-task-type`                  | Categorize requests by task (e.g., "summarization", "translation")    |
 | `traceId`                  | `x-revenium-trace-id`                   | Link multiple API calls in a conversation or session                  |
 | `agent`                    | `x-revenium-agent`                      | Identify which AI agent or service made the request                   |
