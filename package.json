@@ -1,6 +1,6 @@
 {
   "name": "@revenium/litellm",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Comprehensive middleware for Node.js applications using LiteLLM Proxy to automatically track LLM usage, costs, and performance metrics with Revenium",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
