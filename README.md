@@ -174,6 +174,57 @@ if (isMiddlewareInitialized()) {
 }
 ```
 
+## Tool Metering
+
+Track execution of custom tools and external API calls with automatic timing, error handling, and metadata collection.
+
+### Quick Example
+
+```typescript
+import { meterTool, setToolContext } from "@revenium/litellm";
+
+// Set context once (propagates to all tool calls)
+setToolContext({
+  agent: "my-agent",
+  traceId: "session-123"
+});
+
+// Wrap tool execution
+const result = await meterTool("weather-api", async () => {
+  return await fetch("https://api.example.com/weather");
+}, {
+  operation: "get_forecast",
+  outputFields: ["temperature", "humidity"]
+});
+// Automatically extracts temperature & humidity from result
+```
+
+### Functions
+
+**meterTool(toolId, fn, metadata?)**
+- Wraps a function with automatic metering
+- Captures duration, success/failure, and errors
+- Returns function result unchanged
+
+**reportToolCall(toolId, report)**
+- Manually report a tool call that was already executed
+- Useful when wrapping isn't possible
+
+**Context Management**
+- `setToolContext(ctx)` - Set context for all subsequent tool calls
+- `getToolContext()` - Get current context
+- `clearToolContext()` - Clear context
+- `runWithToolContext(ctx, fn)` - Run function with scoped context
+
+### Metadata Options
+
+| Field | Description |
+|-------|-------------|
+| `operation` | Tool operation name (e.g., "search", "scrape") |
+| `outputFields` | Array of field names to auto-extract from result |
+| `usageMetadata` | Custom metrics (e.g., tokens, results count) |
+| `agent`, `traceId`, etc. | Context fields (inherited from setToolContext) |
+
 ## Quick Start Examples
 
 Want to try it immediately? Access the examples directory to find sample scripts to demonstrate how to integrate Revenium's middleware into your existing code.

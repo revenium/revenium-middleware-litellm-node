@@ -214,6 +214,10 @@ export type {
   LiteLLMChatCompletionRequest,
   LiteLLMChatCompletionResponse,
   ReveniumHeaders,
+  ToolContext,
+  ToolMetadata,
+  ToolEventPayload,
+  ToolCallReport,
 } from "./types";
 
 // Export configuration functions for advanced usage
@@ -229,5 +233,18 @@ export { resetHttpClientManager } from "./client";
 
 // Export the initialize function for explicit initialization
 export { initialize };
+
+// Export tool metering functions
+export {
+  meterTool,
+  reportToolCall,
+} from "./tool-tracker";
+
+export {
+  setToolContext,
+  getToolContext,
+  clearToolContext,
+  runWithToolContext,
+} from "./tool-context";
 
 // Testing utilities are exported above with their function declarations

@@ -395,3 +395,5 @@ export interface ProviderPattern {
   /** Provider prefix patterns (e.g., "openai/" in "openai/gpt-4") */
   prefixes: string[];
 }
+
+export * from "./types/tool-metering";
